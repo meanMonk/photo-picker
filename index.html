@@ -44,7 +44,7 @@
                 document.getElementById("imageContainer").innerHTML = "<p class='text-gray-500'>No more images.</p>";
                 return;
             }
-            const imgPath = `/20.03.25/${images[currentIndex]}`;
+            const imgPath = `/data/${images[currentIndex]}`;
             document.getElementById("imageContainer").innerHTML = `
                 <img src="${imgPath}" alt="Image" class="w-full h-[500px] object-contain rounded-lg shadow-md">
                 <div class="mt-4 flex justify-between w-full">

@@ -4,7 +4,7 @@ const path = require("path");
 
 const app = express();
 const PORT = 3000;
-const IMAGE_DIR = path.join(__dirname, "20.03.25");
+const IMAGE_DIR = path.join(__dirname,"data");
 const LIKED_DIR = path.join(__dirname, "liked");
 
 // Ensure "liked" directory exists
@@ -13,7 +13,7 @@ if (!fs.existsSync(LIKED_DIR)) {
 }
 
 app.use(express.static(path.join(__dirname)));  // Serve static files
-app.use("/20.03.25", express.static(IMAGE_DIR));  // Serve original images
+app.use("/data",express.static(IMAGE_DIR));  // Serve original images
 app.use("/liked", express.static(LIKED_DIR));  // Serve liked images
 
 app.use(express.json());  // Middleware to parse JSON
