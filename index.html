@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 flex w-full p-6 h-screen">
+
+    <div class="flex w-full gap-2">
+      <div class="flex-1 w-6/12">
+        <h2 class="text-3xl font-bold mb-4">Photo Manager</h2>
+
+    <div id="imageContainer" class="bg-white p-4 rounded-lg shadow-lg flex flex-col items-center">
+        <!-- Image will be injected here -->
+    </div>
+      </div>
+
+      <div class="flex-1 w-6/12">
+    <h3 class="text-3xl font-bold  mb-4">Liked Images</h3>
+
+    <div id="likedImages" class="grid grid-cols-3 gap-2 bg-white p-4 rounded-lg shadow-lg">
+        <!-- Liked images will be displayed here -->
+    </div>
+  </div>
+    </div>
+    <script>
+        let images = [];
+        let currentIndex = 0;
+
+        async function fetchImages() {
+            const response = await fetch("/images");
+            images = await response.json();
+            if (images.length > 0) {
+                showImage();
+            } else {
+                document.getElementById("imageContainer").innerHTML = "<p class='text-gray-500'>No images found.</p>";
+            }
+        }
+
+        function showImage() {
+            if (currentIndex >= images.length) {
+                document.getElementById("imageContainer").innerHTML = "<p class='text-gray-500'>No more images.</p>";
+                return;
+            }
+            const imgPath = `/20.03.25/${images[currentIndex]}`;
+            document.getElementById("imageContainer").innerHTML = `
+                <img src="${imgPath}" alt="Image" class="w-full h-[500px] object-contain rounded-lg shadow-md">
+                <div class="mt-4 flex justify-between w-full">
+                    <button onclick="keepImage()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md text-gray-800 w-1/2 mx-1">Keep</button>
+                    <button onclick="likeImage()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md w-1/2 mx-1">Like</button>
+                </div>
+            `;
+        }
+
+        async function likeImage() {
+            const imageName = images[currentIndex];
+            await fetch("/like", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ imageName })
+            });
+            currentIndex++;
+            showImage();
+            fetchLikedImages();
+        }
+
+        function keepImage() {
+            currentIndex++;
+            showImage();
+        }
+
+        async function fetchLikedImages() {
+            const response = await fetch("/liked-images");
+            const likedImages = await response.json();
+            const likedImagesDiv = document.getElementById("likedImages");
+            likedImagesDiv.innerHTML = likedImages.map(img => `
+                <img src="/liked/${img}" class="w-52 h-40 object-cover rounded-lg shadow-md">
+            `).join("");
+        }
+
+        fetchImages();
+        fetchLikedImages();
+    </script>
+
+</body>
+</html>
